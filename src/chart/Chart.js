@@ -31,7 +31,7 @@ export default class Chart {
     this.xScale = this.el.offsetWidth / (this.xMax - this.xMin)
     this.yScale = this.el.offsetHeight / this.yMax
 
-    this.data.lines.forEach((l, id) => {
+    this.data.lines.forEach((l) => {
       const values = this.getRelativeValues(l.values)
       const line = new CompositeLine()
 
@@ -42,7 +42,7 @@ export default class Chart {
 
       this.lines.push({
         obj: line,
-        name: l.name,
+        id: l.id,
         visible: true
       })
 
@@ -59,14 +59,29 @@ export default class Chart {
     })
   }
 
-  changeViewbox (coords) {
+  changeLineView (line, view) {
+    this.lines.find(l => l.id === line).visible = view
+
+    this.changeViewbox({
+      right: this.shiftRight || 0,
+      left: this.shiftLeft || 0,
+    }, 300)
+  }
+
+  changeViewbox (coords, duration) {
+    this.shiftRight = coords.right
+    this.shiftLeft = coords.left
+
+    // console.log('this.shiftRight', this.shiftRight);
+    // console.log('this.shiftLeft', this.shiftLeft);
+
     const scaleX = 1 / (1 - coords.left - coords.right)
 
-    const leftX = (this.xMax - this.xMin) * coords.left + this.xMin
+    const leftX = this.xMin + (this.xMax - this.xMin) * coords.left
     const rightX = this.xMax - (this.xMax - this.xMin) * coords.right
 
     let values = this.data.lines.reduce((acc, line) => {
-      if (!this.lines.find(l => l.name === line.name).visible) return acc
+      if (!this.lines.find(l => l.id === line.id).visible) return acc
 
       return [
         ...acc,
@@ -74,12 +89,17 @@ export default class Chart {
       ]
     }, [])
 
-    const leftIndex = values.findIndex(val => val.x > leftX)
-    const rightIndex = values.findIndex(val => val.x > rightX)
+    let leftIndex = values.findIndex(val => val.x >= leftX)
+    let rightIndex = values.findIndex(val => val.x >= rightX)
 
     values = values.slice(leftIndex, rightIndex)
     const maxViewY = Math.max(...values.map(v => v.y))
+    const minViewY = Math.min(...values.map(v => v.y))
 
+    // to do: shift down
+    const shiftDown = (maxViewY - minViewY) / maxViewY
+
+    // console.log('shiftDown', shiftDown);
     const scaleY = this.yMax / maxViewY
 
     // this.el.style.left = `${-shiftLeft}px`
@@ -101,7 +121,10 @@ export default class Chart {
           left: coords.left,
           right: coords.right,
           h: this.el.offsetHeight,
-          w: this.el.offsetWidth
+          w: this.el.offsetWidth,
+          visible: line.visible,
+          duration,
+          shiftDown
         })
       })
     })

@@ -9,7 +9,7 @@ export default class Chart {
     this.el.setAttributeNS(null, 'width', '100%')
     // this.el.setAttributeNS(null, 'viewBox', '0 0 375 300')
     // this.el.setAttributeNS(null, 'preserveAspectRatio', 'none')
-    // this.el.style.transition = 'all 0.5s ease-out'
+    this.el.style.transition = 'opacity 0.3s ease-out'
     this.el.style.position = 'absolute'
     this.el.style.bottom = '0px'
     // this.el.style.transformOrigin = '100% 100%'
@@ -41,6 +41,8 @@ export default class Chart {
   }
 
   changeViewbox (coords) {
+    this.el.style.opacity = (coords.visible) ? 1 : 0
+
     this.left = coords.left
     this.right = coords.right
 
@@ -53,9 +55,10 @@ export default class Chart {
     if (this.scaleY !== coords.y) {
       this.animation = true
       this.animate({
-        duration: 120,
+        duration: coords.duration || 120,
         coords,
-        y0: this.scaleY
+        y0: this.scaleY,
+        shiftDown: coords.shiftDown
       })
 
       return
@@ -68,11 +71,12 @@ export default class Chart {
       right: coords.right,
       h: coords.h,
       w: coords.w,
+      shiftDown: coords.shiftDown
     })
   }
 
   animate (options) {
-    // this.scaleY = options.coords.y
+    this.scaleY = options.coords.y
     const start = performance.now()
 
     const circ = (timeFraction) => {
@@ -88,11 +92,12 @@ export default class Chart {
         const progress = circ(timeFraction)
 
         this.changePath({
-          y: options.y0 + (this.scaleY - options.y0) * progress,
+          y: options.y0 + (this.scaleY - options.y0) * timeFraction,
           h: options.coords.h,
           w: options.coords.w,
           left: options.coords.left,
-          right: options.coords.right
+          right: options.coords.right,
+          shiftDown: options.coords.shiftDown
         });
 
         if (timeFraction < 1) {
@@ -110,13 +115,16 @@ export default class Chart {
     const y = coords.y || this.scaleY
     const x = 1 / (1 - this.left - this.right)
     const shiftLeft = this.left * coords.w * x
+    const { shiftDown } = coords
+
+    // console.log('shiftDown', shiftDown);
 
     let d = this.lines.reduce((acc, line) => {
       acc = `${acc} ${line.x * x - shiftLeft} ${coords.h - (coords.h - line.y) * y} L`
       return acc
     }, 'M')
 
-    d = d.slice(0, d.length - 3)
+    d = d.slice(0, d.length - 2)
 
     this.path.setAttributeNS(null, 'd', d)
   }

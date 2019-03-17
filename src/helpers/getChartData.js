@@ -68,16 +68,17 @@ export default (data) => {
     }, [])
   })
 
-  const lines = values.map((val, id) => {
-    const name = val.splice(0, 1)[0].y
+  const lines = values.map((val) => {
+    const lineId = val.splice(0, 1)[0].y
     const yMinMax = getMinMax(val.map(v => v.y))
 
     return {
       values: val.sort((a, b) => a.x - b.x),
       yMax: yMinMax.max,
       yMin: yMinMax.min,
-      color: data.colors[name],
-      name,
+      color: data.colors[lineId],
+      id: lineId,
+      name: data.names[lineId]
     }
   })
 

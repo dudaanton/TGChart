@@ -6,9 +6,9 @@ import getChartData from '@/helpers/getChartData'
 
 function createNavWrap () {
   const navigationWrapper = document.createElement('div')
-  navigationWrapper.style.height = '60px'
+  navigationWrapper.style.height = '52px'
   navigationWrapper.style.position = 'relative'
-  navigationWrapper.style.marginTop = '24px'
+  navigationWrapper.style.marginTop = '18px'
 
   return navigationWrapper
 }
@@ -18,6 +18,7 @@ function createChartWrap () {
   chartWrapper.style.height = '100%'
   chartWrapper.style.position = 'relative'
   chartWrapper.style.overflow = 'hidden'
+  chartWrapper.style.border = 'solid 1px #aaa'
 
   return chartWrapper
 }
@@ -51,8 +52,17 @@ export default class ChartWrapper {
     //   }
     // })
 
-    // this.checkbox = new Checkbox('#aaa', 'name', )
-    // this.navigationWrapper.appendChild(this.checkbox.el)
+    this.data.lines.forEach((line) => {
+      this.checkbox = new Checkbox({
+        color: line.color,
+        name: line.name,
+        id: line.id
+      }, true, this.changeLineView.bind(this))
+
+      this.checkbox.el.style.margin = '12px 12px 0 0'
+
+      this.navigationWrapper.appendChild(this.checkbox.el)
+    })
 
     setTimeout(() => {
       this.chart.draw(this.data)
@@ -64,7 +74,8 @@ export default class ChartWrapper {
     this.chart.changeViewbox(coords)
   }
 
-  lineView (line, view) {
-
+  changeLineView (line, view) {
+    this.chart.changeLineView(line, view)
+    this.navigation.changeLineView(line, view)
   }
 }

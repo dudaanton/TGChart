@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   root.style.width = '100%'
   root.style.height = '100%'
 
-  const chart = new ChartWrapper(data[3])
+  const chart = new ChartWrapper(data[4])
 
   root.appendChild(chart.el)
 })

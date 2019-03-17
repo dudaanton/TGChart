@@ -4,7 +4,7 @@ export default class Navigation {
   constructor (cb) {
     this.el = document.createElement('div')
     this.el.style.width = '100%'
-    this.el.style.height = '40px'
+    this.el.style.height = '52px'
     this.el.style.position = 'relative'
     this.cb = cb
   }
@@ -222,6 +222,7 @@ export default class Navigation {
       })
 
       document.onmouseup = () => {
+        document.ontouchmove = null
         document.onmousemove = null
       }
     }
@@ -233,7 +234,12 @@ export default class Navigation {
 
       document.ontouchend = () => {
         document.ontouchmove = null
+        document.onmousemove = null
       }
     }
+  }
+
+  changeLineView (line, view) {
+    this.chart.changeLineView(line, view)
   }
 }
