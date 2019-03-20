@@ -44,7 +44,7 @@ function getMinMax (values) {
 //   return names.map(name => colors[name])
 // }
 
-export default (data) => {
+export default (data, width, height) => {
   const xValues = getXValues(data.columns, data.types)
   const yValues = getYValues(data.columns, data.types)
   const xMinMax = getMinMax(xValues)
@@ -82,10 +82,15 @@ export default (data) => {
     }
   })
 
+  const yMin = Math.min(...lines.map(line => line.yMin))
+  const yMax = Math.max(...lines.map(line => line.yMax))
+
   return {
     lines,
     xMax,
-    xMin
+    xMin,
+    yMin,
+    yMax,
   }
 
   // values.sort((a, b) => a.x - b.x)

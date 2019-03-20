@@ -12,10 +12,12 @@ export default class Navigation {
   draw (data) {
     this.chart = new Chart('100%', '90%')
     this.chart.el.style.top = '5%'
+    this.chart.el.style.position = 'absolute'
 
     this.bgc1 = document.createElement('div')
     this.bgc1.style.height = '100%'
     this.bgc1.style.backgroundColor = '#EEF6FF'
+    this.bgc1.style.transition = 'background-color 0.1s ease-out'
     this.bgc1.style.opacity = 0.9
     this.bgc1.style.position = 'absolute'
 
@@ -33,6 +35,7 @@ export default class Navigation {
     this.carriage.style.right = '0px'
     this.carriage.style.border = 'solid #DDEAF3'
     this.carriage.style.borderWidth = '1px 4px'
+    this.carriage.style.transition = 'border-color 0.1s ease-out'
 
     this.grabber = document.createElement('div')
     this.grabber.style.height = '100%'
@@ -42,7 +45,7 @@ export default class Navigation {
     this.grabber.style.right = '0px'
 
     this.bdr1 = document.createElement('div')
-    this.bdr1.style.width = '4px'
+    this.bdr1.style.width = '8px'
     this.bdr1.style.height = '100%'
     this.bdr1.style.position = 'absolute'
     this.bdr1.style.zIndex = 2
@@ -241,5 +244,13 @@ export default class Navigation {
 
   changeLineView (line, view) {
     this.chart.changeLineView(line, view)
+  }
+
+  swithTheme (day) {
+    this.bgc1.style.backgroundColor = (day) ? '#EEF6FF' : '#1E2835'
+    this.bgc2.style.backgroundColor = (day) ? '#EEF6FF' : '#1E2835'
+    this.carriage.style.borderColor = (day) ? '#DDEAF3' : '#40566B'
+
+    // this.chart.swithTheme(day)
   }
 }
