@@ -18,6 +18,7 @@ export default class Chart {
 
     this.shiftRight = 0
     this.shiftLeft = 0
+    this.scaleY = 1
 
     this.lines = []
   }
@@ -40,11 +41,14 @@ export default class Chart {
 
       line.draw(values, {
         color: l.color,
-        thickness: style.thickness || 1.5
+        thickness: style.thickness || 2
       })
 
       this.lines.push({
         obj: line,
+        values: l.values,
+        color: l.color,
+        name: l.name,
         id: l.id,
         visible: true
       })
@@ -54,13 +58,13 @@ export default class Chart {
 
     if (hasInfo) {
       const movementCatch = document.createElement('div')
-      movementCatch.style.width = '100%'
+      movementCatch.style.width = 'calc(100% + 2px)'
       movementCatch.style.height = 'calc(100% + 24px)'
       movementCatch.style.position = 'absolute'
       movementCatch.style.bottom = 0
       movementCatch.style.zIndex = 4
 
-      this.infoBlock = new InfoBlock(this.data.lines, true)
+      this.infoBlock = new InfoBlock(this.lines, true)
       this.el.appendChild(this.infoBlock.el)
       this.el.appendChild(movementCatch)
 
@@ -93,23 +97,34 @@ export default class Chart {
   }
 
   showInfoBlock (e) {
-    console.log('e', e.touches[0].pageX);
-    console.log('this.el.getBoundingClientRect.left', this.el.getBoundingClientRect().left);
-    const offsetX = e.offsetX || e.touches[0].pageX - this.el.getBoundingClientRect().left
+    let offsetX = e.offsetX || e.touches[0].pageX - this.el.getBoundingClientRect().left
+    if (offsetX < 0) {
+      offsetX = 0
+    } else if (offsetX > this.el.offsetWidth) {
+      offsetX = this.el.offsetWidth
+    }
+
     const scaleX = 1 / (1 - this.shiftLeft - this.shiftRight)
-    const x = offsetX / (this.xScale * scaleX)
+    const scaleY = this.scaleY * this.yScale
+    // const x = offsetX / (this.xScale * scaleX) + this.xMin
+    // const x = (offsetX + this.shiftLeft * this.el.offsetWidth + this.shiftLeft * this.el.offsetWidth * (scaleX)) / scaleX / this.xScale + this.xMin
+
+    const l = this.xMin + (this.xMax - this.xMin) * this.shiftLeft
+    const r = this.xMax - (this.xMax - this.xMin) * this.shiftRight
+
+    const x = offsetX / this.el.offsetWidth * (r - l) + l
+
     const values = []
 
-    this.data.lines.forEach((line) => {
-      const coord = {
-        x,
-        y: getCoord(line.values, x).toFixed()
-      }
+    this.lines.forEach((line) => {
+      if (!line.visible) return
+
+      const coord = getCoord(line.values, x).toFixed()
 
       values.push(coord)
     })
 
-    this.infoBlock.draw(values, offsetX, this.yScale)
+    this.infoBlock.draw(values, x, offsetX, this.el.offsetWidth, scaleY)
   }
 
   hideInfoBlock () {
@@ -127,6 +142,10 @@ export default class Chart {
 
   changeLineView (line, view, cb) {
     this.lines.find(l => l.id === line).visible = view
+
+    if (this.infoBlock) {
+      this.infoBlock.applyData(this.lines, true)
+    }
 
     this.changeViewbox({
       right: this.shiftRight || 0,
@@ -146,8 +165,8 @@ export default class Chart {
     const leftX = this.xMin + (this.xMax - this.xMin) * coords.left
     const rightX = this.xMax - (this.xMax - this.xMin) * coords.right
 
-    let values = this.data.lines.reduce((acc, line) => {
-      if (!this.lines.find(l => l.id === line.id).visible) return acc
+    let values = this.lines.reduce((acc, line) => {
+      if (!line.visible) return acc
 
       return [
         ...acc,
@@ -168,7 +187,7 @@ export default class Chart {
     const shiftDown = (maxViewY - minViewY) / maxViewY
 
     // console.log('shiftDown', shiftDown);
-    const scaleY = this.yMax / maxViewY
+    this.scaleY = this.yMax / maxViewY
 
     // this.el.style.left = `${-shiftLeft}px`
     // this.wrapper.style.width = `${this.el.offsetWidth * scaleX}px`
@@ -185,7 +204,7 @@ export default class Chart {
       this.lines.forEach((line) => {
         line.obj.changeViewbox({
           x: scaleX,
-          y: scaleY,
+          y: this.scaleY,
           left: coords.left,
           right: coords.right,
           h: this.el.offsetHeight,
@@ -206,5 +225,9 @@ export default class Chart {
         scaleX: this.xScale * scaleX
       })
     }
+  }
+
+  swithTheme (day) {
+    if (this.infoBlock) this.infoBlock.swithTheme(day)
   }
 }

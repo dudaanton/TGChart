@@ -111,7 +111,7 @@ export default class ChartWrapper {
   swithTheme (day) {
     this.header.style.color = (day) ? '#222222' : '#fff'
 
-    // this.chart.swithTheme(day)
+    this.chart.swithTheme(day)
     this.checkboxes.forEach(c => c.swithTheme(day))
     this.navigation.swithTheme(day)
     this.grid.swithTheme(day)

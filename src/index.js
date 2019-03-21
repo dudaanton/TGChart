@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   root.style.height = '100vh'
   root.style.position = 'relative'
 
-  const chart = new ChartWrapper(data[0])
+  const chart = new ChartWrapper(data[4])
 
   const swithTheme = (day) => {
     document.body.style.backgroundColor = (day) ? '#fff' : '#242F3E'
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const nightButton = new NightButton(swithTheme)
-  nightButton.el.style.position = 'absolute'
+  nightButton.el.style.position = 'fixed'
   nightButton.el.style.bottom = '32px'
   nightButton.el.style.left = '50%'
   nightButton.el.style.transform = 'translate(-50%, 0)'

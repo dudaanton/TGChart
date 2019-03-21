@@ -2,7 +2,6 @@ import Line from '@/chart/Line'
 
 import getDate from '@/helpers/getDate'
 import getNum from '@/helpers/getNum'
-import getCoord from '@/helpers/getCoord'
 
 export default class Grid {
   constructor (width, height) {
