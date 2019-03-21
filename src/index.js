@@ -1,30 +1,42 @@
 import ChartWrapper from '@/chart/ChartWrapper'
 import NightButton from '@/chart/NightButton'
-import data from '@/data'
 
-document.addEventListener('DOMContentLoaded', () => {
+// import data from '@/data'
+
+const initChart = (data) => {
   const root = document.getElementById('root')
-  document.body.style.margin = '0px'
-  document.body.style.transition = 'background-color 0.1s ease-out'
-  document.body.style.overflowX = 'hidden'
-
-  root.style.width = '375px'
-  root.style.height = '100vh'
-  root.style.position = 'relative'
-
   const chart = new ChartWrapper(data[4])
 
   const swithTheme = (day) => {
-    document.body.style.backgroundColor = (day) ? '#fff' : '#242F3E'
+    if (day) {
+      document.body.classList.remove('night')
+    } else {
+      document.body.classList.add('night')
+    }
+
     chart.swithTheme(day)
   }
 
   const nightButton = new NightButton(swithTheme)
-  nightButton.el.style.position = 'fixed'
-  nightButton.el.style.bottom = '32px'
-  nightButton.el.style.left = '50%'
-  nightButton.el.style.transform = 'translate(-50%, 0)'
 
   root.appendChild(chart.el)
   root.appendChild(nightButton.el)
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const xhr = new XMLHttpRequest()
+  xhr.open('GET', 'https://raw.githubusercontent.com/dudaanton/t-data/master/data.json', true);
+
+  xhr.send()
+
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState !== 4) return
+
+    if (xhr.status !== 200) {
+      console.error('Error while loading data')
+    } else {
+      const data = JSON.parse(xhr.responseText)
+      initChart(data)
+    }
+  }
 })

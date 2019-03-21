@@ -1,0 +1,335 @@
+body
+  margin: 0
+  transition: background-color 0.1s ease-out
+
+  &.night
+    background-color: #242F3E
+
+#root
+  position: relative
+
+.tgc-night-button
+  position: fixed
+  bottom: 32px
+  left: 50%
+  transform: translate(-50%, 0)
+
+  font: 18px sans-serif
+  font-weight: 300
+  color: #0F8BE3
+  cursor: pointer
+
+.tgc-chart-wrapper
+  position: relative
+  width: 375px
+  padding: 24px 8px 8px
+  box-sizing: border-box
+
+.tgc-chart-wrapper__header
+  margin: 0 0 24px 4px
+
+  font: 18px sans-serif
+  font-weight: 600
+  color: #222222
+  transition: color 0.1s ease-out
+
+  &.night
+    color: #fff
+
+.tgc-chart-wrapper__wrapper
+  position: relative
+  height: 100%
+
+.tgc-chart-wrapper__nav-wrapper
+  position: relative
+  margin-top: 32px
+  height: 52px
+
+.tgc-chart
+  position: relative
+
+  &_big
+    z-index: 1
+
+.tgc-chart__wrapper
+  position: absolute
+
+  width: 100%
+  height: 100%
+
+.tgc-chart__movement-catch
+  position: absolute
+  bottom: 0
+  z-index: 4
+
+  width: calc(100% + 2px)
+  height: calc(100% + 24px)
+
+.tgc-checkbox
+  position: relative
+  margin: 12px 12px 0 0
+
+  height: 30px
+  padding: 6px 12px 6px 6px
+  display: inline-flex
+  align-items: center
+  box-sizing: border-box
+  border: solid #DDEAF3 1px
+  border-radius: 20px
+
+  transition: border-color 0.1s ease-out
+  cursor: pointer
+
+  &.night
+    border-color: #40566B
+
+    .tgc-checkbox__text
+      color: #E8ECEE
+
+.tgc-checkbox__button
+  margin-right: 12px
+
+  height: 20px
+  width: 20px
+  display: flex
+  align-items: center
+  justify-content: center
+  box-sizing: border-box
+  border: solid
+  border-width: 2px
+  border-radius: 10px
+
+  transition: background-color 0.3s ease-out
+
+  svg
+    width: 10px
+
+    fill: #fff
+    transition: opacity 0.1s ease-out
+
+  &_unchecked
+    svg
+      opacity: 0
+
+.tgc-checkbox__text
+  font: 12px sans-serif
+  text-transform: capitalize
+  color: #43484B
+
+.tgc-composite-line
+  position: absolute
+
+  transition: opacity 0.3s ease-out
+
+  &_hidden
+    opacity: 0
+
+.tgc-grid
+  position: absolute
+  top: 0
+
+  width: 100%
+  height: 100%
+
+.tgc-grid__wrapper
+  position: absolute
+  bottom: -24px
+
+  width: 100%
+  height: 24px
+  box-sizing: border-box
+  overflow: hidden
+
+.tgc-grid__names-wrapper
+  position: absolute
+
+  width: 100%
+  height: 100%
+
+  &.night
+    .tgc-grid__line
+      background-color: #3B4A5A
+
+    .tgc-grid__line-text
+      color: #526677
+
+    .tgc-grid__date
+      color: #526677
+
+      div
+        background-color: #3B4A5A
+
+.tgc-grid__line-wrapper
+  position: absolute
+  bottom: 0
+
+  width: 100%
+
+  transition-property: transform, opacity
+  transition-timing-function: linear
+
+.tgc-grid__line
+  height: 1px
+
+  background-color: #F2F4F5
+
+.tgc-grid__line-text
+  position: absolute
+  top: -16px
+  z-index: 2
+
+  font: 10px sans-serif
+  font-weight: 300
+  color: #98A3AC
+
+.tgc-grid__date
+  position: absolute
+  top: 4px
+
+  transform: translateX(4px)
+  font: 10px sans-serif
+  font-weight: 300
+  white-space: nowrap
+  color: #98A3AC
+  opacity: 0
+  transition: opacity 0.1s linear
+
+  div
+    position: absolute
+    top: -4px
+
+    height: 16px
+    width: 1px
+    transform: translateX(-4px)
+
+    background-color: #F2F4F5
+
+.tgc-info-block
+  position: absolute
+
+  height: 100%
+
+  opacity: 0
+  transition: opacity 0.3s ease-out
+
+  &.night
+    .tgc-info-block__wrapper
+      background-color: #243241
+      box-shadow: 0px 0.3px 1px 0.3px #1E2834, 0px 0.5px 1px 0.3px #1E2834
+
+    .tgc-info-block__date
+      color: #FCFCFC
+
+    .tgc-info-block__line
+      background-color: #3B4A5A
+
+    .tgc-info-block__circles
+      div
+        background-color: #243241
+
+.tgc-info-block__wrapper
+  position: absolute
+  top: 0
+  left: - 32px
+  z-index: 3
+
+  padding: 8px 14px 8px 10px
+  max-width: 100vw
+  border-radius: 4px
+  background-color: #fff
+  box-shadow: 0px 0.3px 1px 0.3px #DBDBDB, 0px 0.5px 1px 0.3px #DBDBDB
+
+.tgc-info-block__date
+  margin-bottom: 14px
+  font: 14px sans-serif
+  white-space: nowrap
+  color: #222222
+
+.tgc-info-block__bottom-wrapper
+  display: flex
+
+.tgc-info-block__line
+  position: absolute
+  z-index: -1
+
+  height: 100%
+  width: 1px
+
+  background-color: #DFE6EB
+
+.tgc-info-block__description
+  display: flex
+  flex-direction: column
+  margin-right: 18px
+
+  &:last-child
+    margin-right: 0
+
+.tgc-info-block__number
+  margin-bottom: 2px
+
+  font: 14px sans-serif
+  font-weight: 600
+
+.tgc-info-block__name
+  font: 12px sans-serif
+
+.tgc-info-block__circle
+  position: absolute
+
+  width: 6px
+  height: 6px
+  transform: translate(-50%, 50%)
+  border: solid 2px
+  border-radius: 5px
+
+  background-color: #fff
+
+.tgc-navigation
+  position: relative
+
+  width: 100%
+  height: 52px
+
+  &.night
+    .tgc-navigation__background
+      background-color: #1E2835
+    
+    .tgc-navigation__carriage
+      border-color: #40566B
+
+.tgc-navigation__chart
+  position: absolute
+  top: 5%
+
+.tgc-navigation__background
+  position: absolute
+
+  height: 100%
+  background-color: #EEF6FF
+  opacity: 0.9
+  transition: background-color 0.1s ease-out
+
+.tgc-navigation__carriage
+  position: absolute
+  z-index: -1
+
+  height: 100%
+  box-sizing: border-box
+  border: solid #DDEAF3
+  border-width: 1px 4px
+
+  transition: border-color 0.1s ease-out
+
+.tgc-navigation__grabber
+  position: absolute
+  z-index: 1
+
+  height: 100%
+
+.tgc-navigation__border
+  position: absolute
+  z-index: 2
+
+  width: 8px
+  height: 100%

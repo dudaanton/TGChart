@@ -3,8 +3,8 @@ const sass = require('sass')
 const autoprefixer = require('autoprefixer')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
@@ -16,6 +16,10 @@ module.exports = {
     './index.js',
     './styles/main.sass',
   ],
+
+  optimization: {
+    minimizer: [new UglifyJsPlugin()],
+  },
 
   devtool: 'inline-source-map',
   devServer: {
@@ -74,13 +78,6 @@ module.exports = {
           {
             loader: 'html-loader?attrs=false',
           },
-          {
-            loader: 'pug-html-loader',
-            options: {
-              basedir: './markup',
-              pretty: true
-            }
-          }
         ],
       }
     ]
@@ -101,7 +98,7 @@ module.exports = {
     // }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: './markup/index.pug'
+      template: './index.html'
     })
   ],
 

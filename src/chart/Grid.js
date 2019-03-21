@@ -2,37 +2,20 @@ import Line from '@/chart/Line'
 
 import getDate from '@/helpers/getDate'
 import getNum from '@/helpers/getNum'
+import isPowerOfTwo from '@/helpers/isPowerOfTwo'
 
 export default class Grid {
-  constructor (width, height) {
+  constructor () {
     this.el = document.createElement('div')
-    this.el.style.width = width
-    this.el.style.height = height
-    this.el.style.position = 'absolute'
-    this.el.style.top = '0px'
+    this.el.className = 'tgc-grid'
 
     this.yScaleNamesWrapper = document.createElement('div')
-    this.yScaleNamesWrapper.style.height = '100%'
-    this.yScaleNamesWrapper.style.width = '100%'
-    this.yScaleNamesWrapper.style.position = 'absolute'
+    this.yScaleNamesWrapper.className = 'tgc-grid__names-wrapper'
+    this.xScaleNamesWrapper = document.createElement('div')
+    this.xScaleNamesWrapper.className = 'tgc-grid__names-wrapper'
 
     const wrapper = document.createElement('div')
-    wrapper.style.height = '24px'
-    wrapper.style.width = '100%'
-    wrapper.style.position = 'absolute'
-    wrapper.style.bottom = '-24px'
-    wrapper.style.boxSizing = 'border-box'
-    wrapper.style.overflow = 'hidden'
-
-    this.xScaleNamesWrapper = document.createElement('div')
-    this.xScaleNamesWrapper.style.position = 'absolute'
-    this.xScaleNamesWrapper.style.height = '100%'
-    this.xScaleNamesWrapper.style.width = '100%'
-    // this.xScaleNamesWrapper.style.padding = '0px 6px'
-    // this.xScaleNamesWrapper.style.display = 'flex'
-    // this.xScaleNamesWrapper.style.justifyContent = 'space-between'
-    // this.xScaleNamesWrapper.style.alignItems = 'center'
-    // this.xScaleNamesWrapper.style.transition = 'left 0.03s linear, width 0.1s linear'
+    wrapper.className = 'tgc-grid__wrapper'
 
     wrapper.appendChild(this.xScaleNamesWrapper)
     this.el.appendChild(wrapper)
@@ -71,7 +54,7 @@ export default class Grid {
       const line = new Line(beautyNum, this.day)
 
       line.el.style.bottom = `${this.step * i}px`
-      line.el.style.transition = `transform ${duration}ms linear, opacity ${duration}ms linear`
+      line.el.style.transitionDuration = `${duration}ms`
       line.el.style.transform = (animate) ? transform : null
       line.el.style.opacity = (animate) ? 0 : 1
 
@@ -85,26 +68,11 @@ export default class Grid {
 
   createXScaleNameElement (name, scale) {
     const el = document.createElement('div')
+    el.className = 'tgc-grid__date'
     el.innerHTML = name
-    el.style.position = 'absolute'
-    el.style.top = '4px'
-    el.style.font = '10px sans-serif'
-    el.style.fontWeight = '300'
-    el.style.whiteSpace = 'nowrap'
-    el.style.color = (this.day) ? '#98A3AC' : '#526677'
-    el.style.opacity = 0
-    el.style.transform = 'translateX(4px)'
     el.dataset.scale = scale
-    el.style.transition = 'opacity 0.1s linear'
 
     const line = document.createElement('div')
-    line.style.position = 'absolute'
-    line.style.top = '-4px'
-    line.style.height = '16px'
-    line.style.width = '1px'
-    line.style.transform = 'translateX(-4px)'
-    line.style.backgroundColor = (this.day) ? '#F2F4F5' : '#3B4A5A'
-
     el.appendChild(line)
 
     setTimeout(() => {
@@ -112,15 +80,6 @@ export default class Grid {
     })
 
     return el
-  }
-
-  isPowerOfTwo (num) {
-    while (num > 1) {
-      num /= 2
-      if (num === 1) return true
-    }
-
-    return false
   }
 
   addXScaleNames () {
@@ -141,20 +100,20 @@ export default class Grid {
 
   scaleXScaleNames (leftX, rightX, scaleX) {
     const left = (leftX - this.xMin) * scaleX
+    const right = (this.xMax - rightX) * scaleX
     this.xScaleNamesWrapper.style.left = `${-left}px`
 
-    const scaleWidth = ((leftX - this.xMin + this.xMax - rightX) * scaleX + this.el.offsetWidth)
+    const scaleWidth = left + right + this.el.offsetWidth
     this.xScaleNamesWrapper.style.width = `${scaleWidth}px`
 
     const xScaleRound = Math.floor(scaleWidth / this.el.offsetWidth)
 
-    if (xScaleRound > this.xScaleRound && this.isPowerOfTwo(xScaleRound)) {
+    if (xScaleRound > this.xScaleRound && isPowerOfTwo(xScaleRound)) {
       const delta = this.xMax - this.xMin
       const step = delta / 6 / xScaleRound
 
       for (let i = 1; i < 6 * xScaleRound; i += 2) {
         const x = this.xMin + step * i
-        console.log('this.data.lines', this.data.lines);
         const date = getDate(x)
         const el = this.createXScaleNameElement(date, xScaleRound)
         el.style.left = `${i / 6 / xScaleRound * 100}%`
@@ -206,13 +165,12 @@ export default class Grid {
   swithTheme (day) {
     this.day = day;
 
-    [...this.yScaleNamesWrapper.children].forEach((line) => {
-      line.children[0].style.backgroundColor = (day) ? '#F2F4F5' : '#3B4A5A'
-      line.children[1].style.color = (day) ? '#98A3AC' : '#526677'
-    });
-    [...this.xScaleNamesWrapper.children].forEach((el) => {
-      el.style.color = (this.day) ? '#98A3AC' : '#526677'
-      el.children[0].style.backgroundColor = (day) ? '#F2F4F5' : '#3B4A5A'
-    })
+    if (this.day) {
+      this.yScaleNamesWrapper.classList.remove('night')
+      this.xScaleNamesWrapper.classList.remove('night')
+    } else {
+      this.yScaleNamesWrapper.classList.add('night')
+      this.xScaleNamesWrapper.classList.add('night')
+    }
   }
 }

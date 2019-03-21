@@ -6,14 +6,12 @@ import getCoord from '@/helpers/getCoord'
 export default class Chart {
   constructor (width, height) {
     this.el = document.createElement('div')
+    this.el.className = 'tgc-chart'
     this.el.style.width = width
     this.el.style.height = height
-    this.el.style.position = 'relative'
 
     this.wrapper = document.createElement('div')
-    this.wrapper.style.position = 'absolute'
-    this.wrapper.style.width = '100%'
-    this.wrapper.style.height = '100%'
+    this.wrapper.className = 'tgc-chart__wrapper'
     this.el.appendChild(this.wrapper)
 
     this.shiftRight = 0
@@ -24,7 +22,6 @@ export default class Chart {
   }
 
   draw (data, style = {}, hasInfo = false) {
-    // this.data = getChartData(data, this.el.offsetHeight, this.el.offsetWidth)
     this.data = data
 
     this.xMin = this.data.xMin
@@ -58,11 +55,7 @@ export default class Chart {
 
     if (hasInfo) {
       const movementCatch = document.createElement('div')
-      movementCatch.style.width = 'calc(100% + 2px)'
-      movementCatch.style.height = 'calc(100% + 24px)'
-      movementCatch.style.position = 'absolute'
-      movementCatch.style.bottom = 0
-      movementCatch.style.zIndex = 4
+      movementCatch.className = 'tgc-chart__movement-catch'
 
       this.infoBlock = new InfoBlock(this.lines, true)
       this.el.appendChild(this.infoBlock.el)
@@ -97,17 +90,14 @@ export default class Chart {
   }
 
   showInfoBlock (e) {
-    let offsetX = e.offsetX || e.touches[0].pageX - this.el.getBoundingClientRect().left
+    let offsetX = (e.offsetX !== undefined) ? e.offsetX : e.touches[0].pageX - this.el.getBoundingClientRect().left
     if (offsetX < 0) {
       offsetX = 0
     } else if (offsetX > this.el.offsetWidth) {
       offsetX = this.el.offsetWidth
     }
 
-    const scaleX = 1 / (1 - this.shiftLeft - this.shiftRight)
     const scaleY = this.scaleY * this.yScale
-    // const x = offsetX / (this.xScale * scaleX) + this.xMin
-    // const x = (offsetX + this.shiftLeft * this.el.offsetWidth + this.shiftLeft * this.el.offsetWidth * (scaleX)) / scaleX / this.xScale + this.xMin
 
     const l = this.xMin + (this.xMax - this.xMin) * this.shiftLeft
     const r = this.xMax - (this.xMax - this.xMin) * this.shiftRight
@@ -157,9 +147,6 @@ export default class Chart {
     this.shiftRight = coords.right
     this.shiftLeft = coords.left
 
-    // console.log('this.shiftRight', this.shiftRight);
-    // console.log('this.shiftLeft', this.shiftLeft);
-
     const scaleX = 1 / (1 - coords.left - coords.right)
 
     const leftX = this.xMin + (this.xMax - this.xMin) * coords.left
@@ -179,26 +166,8 @@ export default class Chart {
 
     values = values.slice(leftIndex, rightIndex + 1)
     const maxViewY = Math.max(...values.map(v => v.y))
-    const minViewY = Math.min(...values.map(v => v.y))
-    // const maxViewX = (values.length) ? values[values.length - 1].x : this.xMin
-    // const minViewX = (values.length) ? values[0].x : this.xMax
 
-    // to do: shift down
-    const shiftDown = (maxViewY - minViewY) / maxViewY
-
-    // console.log('shiftDown', shiftDown);
     this.scaleY = this.yMax / maxViewY
-
-    // this.el.style.left = `${-shiftLeft}px`
-    // this.wrapper.style.width = `${this.el.offsetWidth * scaleX}px`
-    // console.log({
-    //   x: scaleX,
-    //   y: scaleY,
-    //   left: coords.left,
-    //   right: coords.right,
-    //   h: this.el.offsetHeight,
-    //   w: this.el.offsetWidth
-    // });
 
     setTimeout(() => {
       this.lines.forEach((line) => {
@@ -211,7 +180,6 @@ export default class Chart {
           w: this.el.offsetWidth,
           visible: line.visible,
           duration,
-          shiftDown
         })
       })
     })

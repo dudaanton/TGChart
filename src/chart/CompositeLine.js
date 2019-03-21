@@ -1,5 +1,3 @@
-import Line from '@/chart/Line'
-
 const ns = 'http://www.w3.org/2000/svg'
 
 export default class Chart {
@@ -7,12 +5,8 @@ export default class Chart {
     this.el = document.createElementNS(ns, 'svg')
     this.el.setAttributeNS(null, 'height', '100%')
     this.el.setAttributeNS(null, 'width', '100%')
-    // this.el.setAttributeNS(null, 'viewBox', '0 0 375 300')
-    // this.el.setAttributeNS(null, 'preserveAspectRatio', 'none')
-    this.el.style.transition = 'opacity 0.3s ease-out'
-    this.el.style.position = 'absolute'
-    this.el.style.bottom = '0px'
-    // this.el.style.transformOrigin = '100% 100%'
+    this.el.classList.add('tgc-composite-line')
+
     this.scaleY = 1
     this.left = 0
     this.right = 0
@@ -24,7 +18,6 @@ export default class Chart {
     this.data = data
 
     this.path = document.createElementNS(ns, 'path')
-    // this.path.setAttributeNS(null, 'vector-effect', 'non-scaling-stroke')
 
     let d = this.lines.reduce((acc, line) => {
       acc = `${acc} ${line.x} ${line.y} L`
@@ -41,7 +34,11 @@ export default class Chart {
   }
 
   changeViewbox (coords) {
-    this.el.style.opacity = (coords.visible) ? 1 : 0
+    if (coords.visible) {
+      this.el.classList.remove('tgc-composite-line_hidden')
+    } else {
+      this.el.classList.add('tgc-composite-line_hidden')
+    }
 
     this.left = coords.left
     this.right = coords.right
@@ -58,7 +55,6 @@ export default class Chart {
         duration: coords.duration || 120,
         coords,
         y0: this.scaleY,
-        shiftDown: coords.shiftDown
       })
 
       return
@@ -71,7 +67,6 @@ export default class Chart {
       right: coords.right,
       h: coords.h,
       w: coords.w,
-      shiftDown: coords.shiftDown
     })
   }
 
@@ -79,17 +74,11 @@ export default class Chart {
     this.scaleY = options.coords.y
     const start = performance.now()
 
-    const circ = (timeFraction) => {
-      return 1 - Math.sin(Math.acos(timeFraction))
-    }
-
     requestAnimationFrame(() => {
       const animate = (time) => {
         let timeFraction = (time - start) / options.duration
 
         if (timeFraction > 1) timeFraction = 1
-
-        const progress = circ(timeFraction)
 
         this.changePath({
           y: options.y0 + (this.scaleY - options.y0) * timeFraction,
@@ -97,7 +86,6 @@ export default class Chart {
           w: options.coords.w,
           left: options.coords.left,
           right: options.coords.right,
-          shiftDown: options.coords.shiftDown
         });
 
         if (timeFraction < 1) {
@@ -115,9 +103,6 @@ export default class Chart {
     const y = coords.y || this.scaleY
     const x = 1 / (1 - this.left - this.right)
     const shiftLeft = this.left * coords.w * x
-    const { shiftDown } = coords
-
-    // console.log('shiftDown', shiftDown);
 
     let d = this.lines.reduce((acc, line) => {
       acc = `${acc} ${line.x * x - shiftLeft} ${coords.h - (coords.h - line.y) * y} L`

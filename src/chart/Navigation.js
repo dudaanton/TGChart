@@ -3,55 +3,34 @@ import Chart from '@/chart/Chart'
 export default class Navigation {
   constructor (cb) {
     this.el = document.createElement('div')
-    this.el.style.width = '100%'
-    this.el.style.height = '52px'
-    this.el.style.position = 'relative'
+    this.el.className = 'tgc-navigation'
+
     this.cb = cb
   }
 
   draw (data) {
     this.chart = new Chart('100%', '90%')
-    this.chart.el.style.top = '5%'
-    this.chart.el.style.position = 'absolute'
+    this.chart.el.classList.add('tgc-navigation__chart')
 
     this.bgc1 = document.createElement('div')
-    this.bgc1.style.height = '100%'
-    this.bgc1.style.backgroundColor = '#EEF6FF'
-    this.bgc1.style.transition = 'background-color 0.1s ease-out'
-    this.bgc1.style.opacity = 0.9
-    this.bgc1.style.position = 'absolute'
-
-    this.bgc2 = this.bgc1.cloneNode(true)
+    this.bgc1.className = 'tgc-navigation__background'
+    this.bgc2 = document.createElement('div')
+    this.bgc2.className = 'tgc-navigation__background'
+    this.carriage = document.createElement('div')
+    this.carriage.className = 'tgc-navigation__carriage'
+    this.grabber = document.createElement('div')
+    this.grabber.className = 'tgc-navigation__grabber'
+    this.bdr1 = document.createElement('div')
+    this.bdr1.className = 'tgc-navigation__border'
+    this.bdr2 = document.createElement('div')
+    this.bdr2.className = 'tgc-navigation__border'
 
     this.bgc2.style.right = '0px'
     this.bgc1.style.left = '0px'
-
-    this.carriage = document.createElement('div')
-    this.carriage.style.height = '100%'
-    this.carriage.style.boxSizing = 'border-box'
-    this.carriage.style.position = 'absolute'
-    this.carriage.style.zIndex = -1
     this.carriage.style.left = '0px'
     this.carriage.style.right = '0px'
-    this.carriage.style.border = 'solid #DDEAF3'
-    this.carriage.style.borderWidth = '1px 4px'
-    this.carriage.style.transition = 'border-color 0.1s ease-out'
-
-    this.grabber = document.createElement('div')
-    this.grabber.style.height = '100%'
-    this.grabber.style.position = 'absolute'
-    this.grabber.style.zIndex = 1
     this.grabber.style.left = '0px'
     this.grabber.style.right = '0px'
-
-    this.bdr1 = document.createElement('div')
-    this.bdr1.style.width = '8px'
-    this.bdr1.style.height = '100%'
-    this.bdr1.style.position = 'absolute'
-    this.bdr1.style.zIndex = 2
-
-    this.bdr2 = this.bdr1.cloneNode(true)
-
     this.bdr1.style.left = '0px'
     this.bdr2.style.right = '0px'
 
@@ -111,7 +90,6 @@ export default class Navigation {
     const pageX = e.pageX || e.touches[0].pageX
 
     const maxWidth = this.el.offsetWidth
-    // const minCarriageWidth = maxWidth * 0.1
 
     const mouseStartX = pageX
     const leftStartX = parseFloat(this.bdr1.style.left)
@@ -119,9 +97,6 @@ export default class Navigation {
 
     const moveAt = (e) => {
       let shiftX = e.pageX - mouseStartX
-
-      // const leftX = parseFloat(this.bdr1.style.left)
-      // const rightX = parseFloat(this.bdr2.style.right)
 
       if (leftStartX + shiftX < 0) {
         shiftX = -leftStartX
@@ -247,10 +222,10 @@ export default class Navigation {
   }
 
   swithTheme (day) {
-    this.bgc1.style.backgroundColor = (day) ? '#EEF6FF' : '#1E2835'
-    this.bgc2.style.backgroundColor = (day) ? '#EEF6FF' : '#1E2835'
-    this.carriage.style.borderColor = (day) ? '#DDEAF3' : '#40566B'
-
-    // this.chart.swithTheme(day)
+    if (day) {
+      this.el.classList.remove('night')
+    } else {
+      this.el.classList.add('night')
+    }
   }
 }
