@@ -8,6 +8,9 @@ body
 #root
   position: relative
 
+  display: flex
+  flex-direction: column
+
 .tgc-night-button
   position: fixed
   bottom: 32px
@@ -21,7 +24,11 @@ body
 
 .tgc-chart-wrapper
   position: relative
-  width: 375px
+
+  &:not(:last-child)
+    margin-bottom: 64px
+
+  // width: 375px
   padding: 24px 8px 8px
   box-sizing: border-box
 

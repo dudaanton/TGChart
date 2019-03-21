@@ -6,7 +6,7 @@ import Checkbox from '@/chart/Checkbox'
 import getChartData from '@/helpers/getChartData'
 
 export default class ChartWrapper {
-  constructor (data) {
+  constructor (data, name) {
     this.el = document.createElement('div')
     this.el.className = 'tgc-chart-wrapper'
     this.data = getChartData(data)
@@ -19,7 +19,7 @@ export default class ChartWrapper {
 
     this.header = document.createElement('div')
     this.header.className = 'tgc-chart-wrapper__header'
-    this.header.innerHTML = 'Followers'
+    this.header.innerHTML = name
 
     this.el.appendChild(this.header)
     this.el.appendChild(this.chartWrapper)

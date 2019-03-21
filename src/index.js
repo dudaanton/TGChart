@@ -5,7 +5,11 @@ import NightButton from '@/chart/NightButton'
 
 const initChart = (data) => {
   const root = document.getElementById('root')
-  const chart = new ChartWrapper(data[4])
+  const chart1 = new ChartWrapper(data[0], 'Chart #1')
+  const chart2 = new ChartWrapper(data[1], 'Chart #2')
+  const chart3 = new ChartWrapper(data[2], 'Chart #3')
+  const chart4 = new ChartWrapper(data[3], 'Chart #4')
+  const chart5 = new ChartWrapper(data[4], 'Chart #5')
 
   const swithTheme = (day) => {
     if (day) {
@@ -14,12 +18,20 @@ const initChart = (data) => {
       document.body.classList.add('night')
     }
 
-    chart.swithTheme(day)
+    chart1.swithTheme(day)
+    chart2.swithTheme(day)
+    chart3.swithTheme(day)
+    chart4.swithTheme(day)
+    chart5.swithTheme(day)
   }
 
   const nightButton = new NightButton(swithTheme)
 
-  root.appendChild(chart.el)
+  root.appendChild(chart1.el)
+  root.appendChild(chart2.el)
+  root.appendChild(chart3.el)
+  root.appendChild(chart4.el)
+  root.appendChild(chart5.el)
   root.appendChild(nightButton.el)
 }
 

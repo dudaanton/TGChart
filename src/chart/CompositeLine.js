@@ -23,7 +23,7 @@ export default class Chart {
       acc = `${acc} ${line.x} ${line.y} L`
       return acc
     }, 'M')
-    d = d.slice(0, d.length - 3)
+    d = d.slice(0, d.length - 2)
     this.path.setAttributeNS(null, 'd', d)
 
     this.path.style.fill = 'none'
