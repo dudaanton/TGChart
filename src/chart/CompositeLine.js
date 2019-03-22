@@ -103,13 +103,20 @@ export default class Chart {
     const y = coords.y || this.scaleY
     const x = 1 / (1 - this.left - this.right)
     const shiftLeft = this.left * coords.w * x
+    const lines = this.lines.slice(0, this.lines.length - 1)
 
-    let d = this.lines.reduce((acc, line) => {
-      acc = `${acc} ${line.x * x - shiftLeft} ${coords.h - (coords.h - line.y) * y} L`
+    const x1 = this.lines[0].x * x - shiftLeft
+    const y1 = coords.h - (coords.h - this.lines[0].y) * y
+
+    let d = lines.reduce((acc, line, id) => {
+      const x1 = this.lines[id].x * x - shiftLeft
+      const x2 = this.lines[id + 1].x * x - shiftLeft
+      const y2 = coords.h - (coords.h - this.lines[id + 1].y) * y
+
+      if ((x1 < 0 && x2 < 0) || (x1 > coords.w * x && x2 > coords.w * x)) return acc
+      acc = `${acc} L ${x2} ${y2}`
       return acc
-    }, 'M')
-
-    d = d.slice(0, d.length - 2)
+    }, `M ${x1} ${y1}`)
 
     this.path.setAttributeNS(null, 'd', d)
   }
