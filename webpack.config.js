@@ -5,6 +5,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
@@ -38,13 +39,19 @@ module.exports = {
       {
         test: /\.sass$/,
         use: [
-          'style-loader',
+          // 'style-loader',
           // {
           //   loader: 'postcss-loader',
           //   options: {
           //     plugins: () => autoprefixer
           //   }
           // },
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../'
+            }
+          },
           'css-loader',
           {
             loader: 'sass-loader',
@@ -96,6 +103,10 @@ module.exports = {
     //   filename: './css/main.css',
     //   allChunks: true,
     // }),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css'
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './index.html'

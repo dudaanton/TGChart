@@ -161,6 +161,8 @@ export default class Chart {
       ]
     }, [])
 
+    values.sort((a, b) => a.x - b.x)
+
     let leftIndex = values.findIndex(val => val.x >= leftX)
     let rightIndex = values.findIndex(val => val.x >= rightX)
 
