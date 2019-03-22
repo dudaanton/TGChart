@@ -1,4 +1,3 @@
-import CompositeLine from '@/chart/CompositeLine'
 import InfoBlock from '@/chart/InfoBlock'
 
 import getCoord from '@/helpers/getCoord'
@@ -17,8 +16,11 @@ export default class Chart {
     this.shiftRight = 0
     this.shiftLeft = 0
     this.scaleY = 1
+    this.scaleYOld = 1
+    this.animation = false
 
     this.lines = []
+    this.paths = []
   }
 
   draw (data, style = {}, hasInfo = false) {
@@ -34,24 +36,23 @@ export default class Chart {
 
     this.data.lines.forEach((l) => {
       const values = this.getRelativeValues(l.values)
-      const line = new CompositeLine()
 
-      line.draw(values, {
+      this.paths.push({
+        values,
         color: l.color,
         thickness: style.thickness || 2
       })
 
       this.lines.push({
-        obj: line,
         values: l.values,
         color: l.color,
         name: l.name,
         id: l.id,
         visible: true
       })
-
-      this.wrapper.appendChild(line.el)
     })
+
+    this.drawCanvas()
 
     if (hasInfo) {
       const movementCatch = document.createElement('div')
@@ -172,17 +173,11 @@ export default class Chart {
     this.scaleY = this.yMax / maxViewY
 
     setTimeout(() => {
-      this.lines.forEach((line) => {
-        line.obj.changeViewbox({
-          x: scaleX,
-          y: this.scaleY,
-          left: coords.left,
-          right: coords.right,
-          h: this.el.offsetHeight,
-          w: this.el.offsetWidth,
-          visible: line.visible,
-          duration,
-        })
+      this.changeCanvas({
+        x: scaleX,
+        left: coords.left,
+        right: coords.right,
+        duration,
       })
     })
 
@@ -195,6 +190,125 @@ export default class Chart {
         scaleX: this.xScale * scaleX
       })
     }
+  }
+
+  drawCanvas () {
+    this.canvas = document.createElement('canvas')
+    this.canvas.width = this.el.offsetWidth
+    this.canvas.height = this.el.offsetHeight
+    this.wrapper.appendChild(this.canvas)
+
+    const ctx = this.canvas.getContext('2d')
+
+    this.paths.forEach((path) => {
+      ctx.strokeStyle = path.color
+      ctx.lineWidth = path.thickness
+
+      const lines = path.values.slice(0, path.values.length - 1)
+
+      lines.forEach((line, id) => {
+        ctx.beginPath()
+        ctx.moveTo(path.values[id].x, path.values[id].y)
+        ctx.lineTo(path.values[id + 1].x, path.values[id + 1].y)
+        ctx.closePath()
+        ctx.stroke()
+      })
+    })
+  }
+
+  changeCanvas (coords) {
+    this.left = coords.left
+    this.right = coords.right
+
+    if (this.animation) {
+      this.scaleYOld = this.scaleY
+
+      return
+    }
+
+    if (this.scaleYOld !== this.scaleY) {
+      this.animation = true
+      this.animate({
+        duration: coords.duration || 120,
+        coords,
+        y0: this.scaleYOld,
+      })
+
+      return
+    }
+
+    this.scaleYOld = this.scaleY
+
+    this.changePaths({
+      left: coords.left,
+      right: coords.right,
+    })
+  }
+
+  animate (options) {
+    this.scaleYOld = this.scaleY
+    const start = performance.now()
+
+    requestAnimationFrame(() => {
+      const animate = (time) => {
+        let timeFraction = (time - start) / options.duration
+
+        if (timeFraction > 1) timeFraction = 1
+
+        this.changePaths({
+          y: options.y0 + (this.scaleYOld - options.y0) * timeFraction,
+          left: options.coords.left,
+          right: options.coords.right,
+          timeFraction
+        });
+
+        if (timeFraction < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          this.animation = false
+        }
+      }
+
+      requestAnimationFrame(animate)
+    });
+  }
+
+  changePaths (coords) {
+    const y = coords.y || this.scaleY
+    const x = 1 / (1 - coords.left - coords.right)
+    const w = this.el.offsetWidth
+    const h = this.el.offsetHeight
+    const shiftLeft = coords.left * w * x
+
+    const ctx = this.canvas.getContext('2d')
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.paths.forEach((path, id) => {
+      ctx.strokeStyle = path.color
+      ctx.lineWidth = path.thickness
+      if (this.lines[id].visible) {
+        ctx.globalAlpha = 1
+      } else {
+        ctx.globalAlpha = coords.opacity || 0
+      }
+
+      const lines = path.values.slice(0, path.values.length - 1)
+
+      lines.forEach((line, id) => {
+        const x1 = path.values[id].x * x - shiftLeft
+        const x2 = path.values[id + 1].x * x - shiftLeft
+        const y1 = h - (h - path.values[id].y) * y
+        const y2 = h - (h - path.values[id + 1].y) * y
+
+        if ((x1 < 0 && x2 < 0) || (x1 > w * x && x2 > w * x)) return
+
+        ctx.beginPath()
+        ctx.moveTo(x1, y1)
+        ctx.lineTo(x2, y2)
+        ctx.closePath()
+        ctx.stroke()
+      })
+    })
   }
 
   swithTheme (day) {
