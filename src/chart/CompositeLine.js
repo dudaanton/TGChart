@@ -105,7 +105,9 @@ export default class Chart {
     const shiftLeft = this.left * coords.w * x
 
     let d = this.lines.reduce((acc, line) => {
-      acc = `${acc} ${line.x * x - shiftLeft} ${coords.h - (coords.h - line.y) * y} L`
+      const newX = line.x * x - shiftLeft
+      if (newX < 0 || newX > coords.w) return acc
+      acc = `${acc} ${newX} ${coords.h - (coords.h - line.y) * y} L`
       return acc
     }, 'M')
 
