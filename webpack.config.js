@@ -23,11 +23,11 @@ module.exports = {
   },
 
   devtool: 'inline-source-map',
-  devServer: {
-    contentBase: path.resolve(__dirname, 'dist'),
-    watchContentBase: true,
-    // hot: true
-  },
+  // devServer: {
+  //   contentBase: path.resolve(__dirname, 'dist'),
+  //   watchContentBase: true,
+  //   // hot: true
+  // },
 
   module: {
     rules: [
@@ -98,7 +98,7 @@ module.exports = {
 
   plugins: [
     new CleanWebpackPlugin(['dist']),
-    new webpack.HotModuleReplacementPlugin(),
+    // new webpack.HotModuleReplacementPlugin(),
     // new ExtractTextPlugin({
     //   filename: './css/main.css',
     //   allChunks: true,
